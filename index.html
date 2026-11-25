@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wlupidol Builder — конструктор сайтов</title>
+<style id="sitecss"></style>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#0e1117;color:#e6edf3;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#161b22;border-bottom:1px solid #262d38;flex-wrap:wrap;flex:0 0 auto}
+.brand{font-weight:800;font-size:15px;letter-spacing:.3px;margin-right:4px}
+.brand span{color:#3b82f6}
+.titleinp{background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:7px 10px;border-radius:8px;font-size:13px;width:170px;font-family:inherit}
+.titleinp:focus{outline:none;border-color:#3b82f6}
+.tb{background:#21262d;border:1px solid #30363d;color:#e6edf3;padding:7px 11px;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit}
+.tb:hover{background:#2d333b;border-color:#3b82f6}
+.tb.pri{background:#2563eb;border-color:#2563eb;font-weight:600}
+.tb.pri:hover{background:#1d4ed8}
+.sp{flex:1}
+.app{flex:1;display:flex;min-height:0}
+.left{width:200px;flex:0 0 200px;background:#161b22;border-right:1px solid #262d38;overflow:auto;padding:10px}
+.right{width:290px;flex:0 0 290px;background:#161b22;border-left:1px solid #262d38;overflow:auto;padding:10px}
+.sect{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#7d8590;margin:4px 0 8px;font-weight:700}
+.pbtn{display:flex;align-items:center;gap:9px;width:100%;background:#1c2128;border:1px solid #30363d;color:#e6edf3;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:6px;text-align:left;font-family:inherit;transition:.12s}
+.pbtn:hover{background:#262d38;border-color:#3b82f6;transform:translateX(2px)}
+.pbtn i{font-style:normal;width:18px;text-align:center;color:#3b82f6;font-size:14px}
+.tip{font-size:11.5px;color:#7d8590;line-height:1.5;margin-top:12px;border-top:1px solid #262d38;padding-top:10px}
+.canvas-wrap{flex:1;overflow:auto;background:#0b0e13;padding:20px;display:flex;justify-content:center;align-items:flex-start}
+#canvas{width:100%;max-width:1000px;border-radius:12px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.6);min-height:440px;background:#fff}
+.hint{color:#7d8590;font-size:13px;line-height:1.6;padding:8px 2px}
+.ptitle{font-weight:700;font-size:14px;margin-bottom:10px;color:#fff}
+.grp{border-top:1px solid #262d38;padding-top:10px;margin-top:12px}
+.glabel{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#7d8590;margin-bottom:8px;font-weight:700}
+.fld{display:block;margin-bottom:9px}
+.fld>span{display:block;font-size:12px;color:#9aa4b0;margin-bottom:4px}
+.fld input[type=text],.fld textarea,.fld select{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:8px 10px;border-radius:7px;font-size:13px;font-family:inherit;resize:vertical}
+.fld input[type=text]:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:#3b82f6}
+.fld input[type=color]{width:100%;height:34px;background:#0d1117;border:1px solid #30363d;border-radius:7px;cursor:pointer;padding:2px}
+.fld input[type=range]{width:100%;accent-color:#3b82f6}
+.acts{display:flex;gap:6px;margin-top:8px}
+.acts button{flex:1;background:#21262d;border:1px solid #30363d;color:#e6edf3;padding:8px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit}
+.acts button:hover{background:#2d333b;border-color:#3b82f6}
+.acts button.danger:hover{background:#7f1d1d;border-color:#b91c1c}
+#canvas .blk.editable{outline:1px dashed transparent;outline-offset:-1px;transition:outline-color .12s}
+#canvas .blk.editable:hover{outline-color:rgba(59,130,246,.55)}
+#canvas .blk.sel{outline:2px solid #3b82f6;outline-offset:-2px}
+.blkbar{position:absolute;top:6px;right:6px;display:none;gap:4px;z-index:20}
+#canvas .blk.editable:hover .blkbar,#canvas .blk.sel .blkbar{display:flex}
+.blkbar button{width:26px;height:26px;border-radius:6px;border:1px solid #30363d;background:rgba(22,27,34,.94);color:#e6edf3;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
+.blkbar button:hover{background:#2563eb;border-color:#2563eb}
+.blkbar button.del:hover{background:#b91c1c;border-color:#b91c1c}
+.blank{color:#9aa4b0;text-align:center;padding:80px 20px;font-size:15px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+@media(max-width:900px){.left{width:150px;flex:0 0 150px}.right{width:230px;flex:0 0 230px}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Wlupidol<span>Builder</span></div>
+  <input id="docTitle" class="titleinp" value="Мой сайт" title="Название сайта (заголовок вкладки)">
+  <button class="tb" id="btnUndo" title="Ctrl+Z">↶ Отменить</button>
+  <button class="tb" id="btnRedo" title="Ctrl+Shift+Z">↷ Вернуть</button>
+  <span class="sp"></span>
+  <select id="tplSel" class="tb">
+    <option value="">Шаблон…</option>
+    <option value="landing">Лендинг</option>
+    <option value="portfolio">Портфолио</option>
+    <option value="card">Визитка</option>
+    <option value="blank">Очистить всё</option>
+  </select>
+  <button class="tb" id="btnSave" title="Ctrl+S">💾 Сохранить</button>
+  <button class="tb" id="btnLoad">📂 Загрузить</button>
+  <button class="tb" id="btnPreview">👁 Предпросмотр</button>
+  <button class="tb pri" id="btnDownload">⬇ Скачать сайт</button>
+</header>
+
+<div class="app">
+  <aside class="left">
+    <div class="sect">Блоки</div>
+    <div id="palette"></div>
+    <div class="tip">Кликните по тексту на холсте — и пишите прямо там. Настройки выбранного блока справа.</div>
+  </aside>
+  <main class="canvas-wrap"><div id="canvas" class="site"></div></main>
+  <aside class="right">
+    <div class="sect">Настройки</div>
+    <div id="props"></div>
+  </aside>
+</div>
+
+<script>
+/* ================= СТИЛИ ГОТОВОГО САЙТА ================= */
+const SITE_CSS = `
+.site{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;line-height:1.6;color:#111827;background:#fff;-webkit-font-smoothing:antialiased}
+.site *{box-sizing:border-box;margin:0;padding:0}
+.site .blk{position:relative}
+.site .wrap{max-width:1080px;margin:0 auto}
+.site .row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.site .between{justify-content:space-between}
+.site .logo{font-weight:800;font-size:20px;letter-spacing:-.2px}
+.site .nav{display:flex;gap:20px;flex-wrap:wrap;font-size:15px;opacity:.85}
+.site h1{font-size:clamp(28px,5vw,46px);line-height:1.14;margin-bottom:14px;font-weight:800;letter-spacing:-.5px}
+.site h2{font-size:clamp(22px,3.4vw,32px);margin-bottom:10px;font-weight:700;letter-spacing:-.3px}
+.site h3{font-size:18px;margin-bottom:6px;font-weight:700}
+.site p{font-size:17px;opacity:.92}
+.site .btn{display:inline-block;padding:13px 28px;border-radius:10px;background:#2563eb;color:#fff;font-weight:600;text-decoration:none;margin-top:16px;cursor:pointer;border:none;font-size:16px;font-family:inherit}
+.site .btn:hover{background:#1d4ed8}
+.site .grid{display:grid;gap:18px}
+.site .g2{grid-template-columns:repeat(2,1fr)}
+.site .g3{grid-template-columns:repeat(3,1fr)}
+.site .card{padding:22px;border-radius:14px;background:rgba(127,127,127,.09)}
+.site .card .ic{font-size:20px;font-weight:800;color:#2563eb;margin-bottom:8px}
+.site img{max-width:100%;display:block;border-radius:12px}
+.site .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.site .gal img{width:100%;height:180px;object-fit:cover}
+.site .ph{width:100%;height:210px;border-radius:12px;background:repeating-linear-gradient(45deg,#e8eaee,#e8eaee 12px,#f4f5f7 12px,#f4f5f7 24px);display:flex;align-items:center;justify-content:center;color:#8b93a1;font-size:14px}
+.site form{max-width:540px;margin:0 auto}
+.site input,.site textarea{width:100%;padding:12px 14px;border:1px solid #d5d9e0;border-radius:9px;font:inherit;font-size:15px;margin-bottom:10px;background:#fff;color:#111827}
+.site input:focus,.site textarea:focus{outline:none;border-color:#2563eb}
+.site hr{border:none;border-top:1px solid rgba(127,127,127,.3)}
+.site .foot{font-size:14px;opacity:.75}
+.site .vid{position:relative;width:100%;max-width:760px;margin:0 auto;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.site .vid iframe,.site .vid video{width:100%;height:100%;border:0;display:block}
+@media(max-width:760px){.site .g3,.site .g2{grid-template-columns:1fr}.site .gal{grid-template-columns:repeat(2,1fr)}.site .row{gap:12px}}
+`;
+
+/* ================= УТИЛИТЫ ================= */
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 9);
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const clone = o => JSON.parse(JSON.stringify(o));
+const toHex = v => /^#[0-9a-f]{6}$/i.test(v) ? v : '#ffffff';
+const ytId = u => { const m = String(u||'').match(/(?:youtu\.be\/|v=|embed\/)([\w-]{6,})/); return m ? m[1] : ''; };
+
+/* ================= ОПИСАНИЕ БЛОКОВ ================= */
+const DEFS = {
+  header:{name:'Шапка', icon:'▤', props:{bg:'#ffffff',color:'#111827',padding:18,align:'left',radius:0}, content:{logo:'Мой Сайт', links:'Главная, Услуги, О нас, Контакты'}},
+  hero:{name:'Баннер', icon:'★', props:{bg:'#0f172a',color:'#ffffff',padding:72,align:'center',radius:0}, content:{title:'Заголовок, который продаёт', text:'Короткое описание вашего предложения в одну-две строки.', btn:'Оставить заявку', href:'#'}},
+  heading:{name:'Заголовок', icon:'H', props:{bg:'#ffffff',color:'#111827',padding:26,align:'left',radius:0}, content:{title:'Заголовок раздела'}},
+  text:{name:'Текст', icon:'¶', props:{bg:'#ffffff',color:'#374151',padding:18,align:'left',radius:0}, content:{text:'Здесь ваш текст. Кликните и напишите что угодно.'}},
+  image:{name:'Картинка', icon:'▣', props:{bg:'#ffffff',color:'#111827',padding:18,align:'center',radius:0}, content:{src:'', alt:'Изображение'}},
+  button:{name:'Кнопка', icon:'⬭', props:{bg:'#ffffff',color:'#111827',padding:18,align:'center',radius:0}, content:{btn:'Нажми меня', href:'#'}},
+  gallery:{name:'Галерея', icon:'▦', props:{bg:'#ffffff',color:'#111827',padding:22,align:'center',radius:0}, content:{images:''}},
+  columns:{name:'Колонки', icon:'▥', props:{bg:'#ffffff',color:'#111827',padding:34,align:'left',radius:0}, content:{count:3,c1t:'Заголовок 1',c1x:'Описание первой колонки.',c2t:'Заголовок 2',c2x:'Описание второй колонки.',c3t:'Заголовок 3',c3x:'Описание третьей колонки.'}},
+  features:{name:'Преимущества', icon:'✓', props:{bg:'#f8fafc',color:'#111827',padding:40,align:'left',radius:0}, content:{title:'Почему мы', items:'Опыт более 10 лет|Работаем по договору\nСвои материалы|Без наценок\nГарантия 3 года|На все работы'}},
+  form:{name:'Форма заявки', icon:'✉', props:{bg:'#ffffff',color:'#111827',padding:40,align:'center',radius:0}, content:{title:'Оставьте заявку', btn:'Отправить', action:''}},
+  video:{name:'Видео', icon:'▶', props:{bg:'#ffffff',color:'#111827',padding:26,align:'center',radius:0}, content:{url:''}},
+  divider:{name:'Линия', icon:'—', props:{bg:'#ffffff',color:'#111827',padding:14,align:'center',radius:0}, content:{}},
+  spacer:{name:'Отступ', icon:'␣', props:{bg:'#ffffff',color:'#111827',padding:0,align:'center',radius:0}, content:{h:60}},
+  footer:{name:'Подвал', icon:'▬', props:{bg:'#0f172a',color:'#cbd5e1',padding:30,align:'center',radius:0}, content:{text:'© 2025 Мой Сайт. Все права защищены.'}}
+};
+
+function mk(type){
+  const d = DEFS[type];
+  return { id: uid(), type, props: clone(d.props), content: clone(d.content) };
+}
+
+const TPL = {
+  blank: () => [],
+  landing: () => [mk('header'), mk('hero'), mk('features'), mk('columns'), mk('form'), mk('footer')],
+  portfolio: () => [mk('header'), mk('hero'), mk('gallery'), mk('text'), mk('footer')],
+  card: () => [mk('header'), mk('hero'), mk('features'), mk('footer')]
+};
+
+/* ================= СОСТОЯНИЕ ================= */
+let state = { title:'Мой сайт', blocks: [], selected: null };
+let hist = [], hi = -1;
+
+function snap(){
+  const s = JSON.stringify({ title: state.title, blocks: state.blocks });
+  if (hist[hi] === s) return;
+  hist = hist.slice(0, hi + 1);
+  hist.push(s);
+  hi = hist.length - 1;
+  if (hist.length > 80) { hist.shift(); hi--; }
+}
+function undo(){ if (hi > 0) { hi--; applyHist(); } }
+function redo(){ if (hi < hist.length - 1) { hi++; applyHist(); } }
+function applyHist(){
+  const d = JSON.parse(hist[hi]);
+  state.title = d.title; state.blocks = d.blocks; state.selected = null;
+  $('#docTitle').value = state.title;
+  render();
+}
+
+/* ================= РЕНДЕР БЛОКОВ ================= */
+function renderInner(b, edit){
+  const c = b.content;
+  const CE = (f, extra) => edit ? ` contenteditable="true" data-field="${f}"${extra||''}` : '';
+  switch (b.type) {
+    case 'header': {
+      const links = String(c.links||'').split(',').map(s=>s.trim()).filter(Boolean);
+      return `<div class="row between"><div class="logo"${CE('logo')}>${esc(c.logo)}</div><nav class="nav">${links.map((l,i)=>`<span${CE('links',` data-idx="${i}"`)}>${esc(l)}</span>`).join('')}</nav></div>`;
+    }
+    case 'hero': {
+      const btn = edit ? `<div class="btn"${CE('btn')}>${esc(c.btn)}</div>` : `<a class="btn" href="${esc(c.href||'#')}">${esc(c.btn)}</a>`;
+      return `<h1${CE('title')}>${esc(c.title)}</h1><p${CE('text')}>${esc(c.text)}</p>${btn}`;
+    }
+    case 'heading': return `<h2${CE('title')}>${esc(c.title)}</h2>`;
+    case 'text': return `<p${CE('text')}>${esc(c.text)}</p>`;
+    case 'image': return c.src ? `<img src="${esc(c.src)}" alt="${esc(c.alt)}">` : `<div class="ph">Картинка — вставьте ссылку справа</div>`;
+    case 'button': return edit ? `<div class="btn"${CE('btn')}>${esc(c.btn)}</div>` : `<a class="btn" href="${esc(c.href||'#')}">${esc(c.btn)}</a>`;
+    case 'gallery': {
+      const imgs = String(c.images||'').split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+      if (!imgs.length) return `<div class="gal"><div class="ph" style="height:180px">Фото</div><div class="ph" style="height:180px">Фото</div><div class="ph" style="height:180px">Фото</div></div>`;
+      return `<div class="gal">${imgs.map(u=>`<img src="${esc(u)}" alt="">`).join('')}</div>`;
+    }
+    case 'columns': {
+      const n = +c.count || 3, cols = [];
+      for (let i = 1; i <= n; i++) cols.push(`<div class="card"><h3${CE('c'+i+'t')}>${esc(c['c'+i+'t'])}</h3><p${CE('c'+i+'x')}>${esc(c['c'+i+'x'])}</p></div>`);
+      return `<div class="grid g${n}">${cols.join('')}</div>`;
+    }
+    case 'features': {
+      const items = String(c.items||'').split('\n').map(s=>s.trim()).filter(Boolean).map(line => {
+        const p = line.split('|');
+        return `<div class="card"><div class="ic">✓</div><h3>${esc(p[0]||'')}</h3><p>${esc(p[1]||'')}</p></div>`;
+      });
+      return `${c.title ? `<h2>${esc(c.title)}</h2>` : ''}<div class="grid g3" style="margin-top:18px">${items.join('')}</div>`;
+    }
+    case 'form': {
+      const act = c.action ? ` action="${esc(c.action)}" method="post"` : ' onsubmit="return false"';
+      return `${c.title ? `<h2>${esc(c.title)}</h2>` : ''}<form${act}><input type="text" name="name" placeholder="Ваше имя"><input type="tel" name="phone" placeholder="Телефон"><textarea name="msg" rows="3" placeholder="Сообщение"></textarea><button class="btn" type="submit">${esc(c.btn)}</button></form>`;
+    }
+    case 'video': {
+      const id = ytId(c.url);
+      if (id) return `<div class="vid"><iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy"></iframe></div>`;
+      if (/\.(mp4|webm|ogg)$/i.test(c.url||'')) return `<div class="vid"><video src="${esc(c.url)}" controls></video></div>`;
+      return `<div class="vid" style="display:flex;align-items:center;justify-content:center;color:#8b93a1;font-size:14px">Вставьте ссылку YouTube или MP4 справа</div>`;
+    }
+    case 'divider': return `<hr>`;
+    case 'spacer': return `<div style="height:${+c.h||60}px"></div>`;
+    case 'footer': return `<div class="foot"${CE('text')}>${esc(c.text)}</div>`;
+  }
+  return '';
+}
+
+function renderBlock(b, edit){
+  const p = b.props;
+  const style = `background:${p.bg};color:${p.color};padding:${p.padding}px 22px;text-align:${p.align};border-radius:${p.radius}px`;
+  const bar = edit ? `<div class="blkbar"><button data-act="up" title="Вверх">↑</button><button data-act="down" title="Вниз">↓</button><button data-act="dup" title="Дублировать">⧉</button><button data-act="del" class="del" title="Удалить">✕</button></div>` : '';
+  return `<section class="blk${edit ? ' editable' : ''}"${edit ? ` data-id="${b.id}"` : ''} style="${style}">${bar}<div class="wrap">${renderInner(b, edit)}</div></section>`;
+}
+
+/* ================= ЭКСПОРТ ================= */
+function exportHTML(){
+  const body = state.blocks.map(b => renderBlock(b, false)).join('\n');
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(state.title || 'Мой сайт')}</title>
+<style>${SITE_CSS}</style>
+</head>
+<body class="site">
+${body}
+</body>
+</html>`;
+}
+
+/* ================= РЕНДЕР ХОЛСТА ================= */
+const canvas = $('#canvas');
+
+function renderCanvasOnly(){
+  canvas.innerHTML = state.blocks.length
+    ? state.blocks.map(b => renderBlock(b, true)).join('')
+    : '<div class="blank">Пусто. Добавьте блоки из палитры слева →</div>';
+  updateSel();
+}
+function updateSel(){
+  canvas.querySelectorAll('.blk').forEach(el => el.classList.toggle('sel', el.dataset.id === state.selected));
+}
+function render(){ renderCanvasOnly(); renderProps(); }
+
+/* ================= ПАНЕЛЬ НАСТРОЕК ================= */
+function contentFields(b){
+  const c = b.content;
+  const T = (l,f) => `<label class="fld"><span>${l}</span><input type="text" data-cf="${f}" value="${esc(c[f]||'')}"></label>`;
+  const A = (l,f,r) => `<label class="fld"><span>${l}</span><textarea data-cf="${f}" rows="${r||3}">${esc(c[f]||'')}</textarea></label>`;
+  switch (b.type) {
+    case 'header': return T('Название / логотип','logo') + T('Пункты меню (через запятую)','links');
+    case 'hero': return T('Заголовок','title') + A('Описание','text') + T('Текст кнопки','btn') + T('Ссылка кнопки','href');
+    case 'heading': return T('Заголовок','title');
+    case 'text': return A('Текст','text',5);
+    case 'image': return T('Ссылка на картинку (URL)','src') + T('Подпись (alt)','alt');
+    case 'button': return T('Текст кнопки','btn') + T('Ссылка','href');
+    case 'gallery': return A('Ссылки на фото — по одной в строке','images',5);
+    case 'columns': return `<label class="fld"><span>Колонок</span><select data-cf="count"><option value="2"${+c.count===2?' selected':''}>2</option><option value="3"${+c.count===3?' selected':''}>3</option></select></label>`
+      + T('Заголовок 1','c1t') + A('Текст 1','c1x',2) + T('Заголовок 2','c2t') + A('Текст 2','c2x',2)
+      + (+c.count===3 ? T('Заголовок 3','c3t') + A('Текст 3','c3x',2) : '');
+    case 'features': return T('Заголовок раздела','title') + A('Строки в формате: Заголовок|Текст','items',6);
+    case 'form': return T('Заголовок','title') + T('Текст кнопки','btn') + T('Куда отправлять (URL, необязательно)','action');
+    case 'video': return T('Ссылка YouTube или MP4','url');
+    case 'spacer': return `<label class="fld"><span>Высота: ${+c.h||60}px</span><input type="range" min="10" max="240" step="5" data-cf="h" value="${+c.h||60}"></label>`;
+    case 'footer': return T('Текст подвала','text');
+  }
+  return '';
+}
+
+function renderProps(){
+  const el = $('#props');
+  const b = state.blocks.find(x => x.id === state.selected);
+  if (!b) {
+    el.innerHTML = '<div class="hint">Кликните блок на холсте, чтобы настроить его.<br><br>Слева — палитра блоков. Собирайте страницу сверху вниз, потом нажмите <b>«Скачать сайт»</b> — получите готовый HTML-файл.</div>';
+    return;
+  }
+  const d = DEFS[b.type];
+  let h = `<div class="ptitle">${d.icon} ${d.name}</div>`;
+  h += `<div class="glabel">Оформление</div>`;
+  h += `<label class="fld"><span>Фон блока</span><input type="color" data-prop="bg" value="${toHex(b.props.bg)}"></label>`;
+  h += `<label class="fld"><span>Цвет текста</span><input type="color" data-prop="color" value="${toHex(b.props.color)}"></label>`;
+  h += `<label class="fld"><span>Отступы: ${b.props.padding}px</span><input type="range" min="0" max="140" step="2" data-prop="padding" value="${b.props.padding}"></label>`;
+  h += `<label class="fld"><span>Скругление: ${b.props.radius}px</span><input type="range" min="0" max="40" step="1" data-prop="radius" value="${b.props.radius}"></label>`;
+  h += `<label class="fld"><span>Выравнивание</span><select data-prop="align">${['left','center','right'].map(a=>`<option value="${a}"${b.props.align===a?' selected':''}>${{left:'Слева',center:'По центру',right:'Справа'}[a]}</option>`).join('')}</select></label>`;
+  const cf = contentFields(b);
+  if (cf) h += `<div class="grp"><div class="glabel">Содержимое</div>${cf}</div>`;
+  h += `<div class="acts"><button data-act2="up">↑ Вверх</button><button data-act2="down">↓ Вниз</button></div>`;
+  h += `<div class="acts"><button data-act2="dup">⧉ Дублировать</button><button data-act2="del" class="danger">✕ Удалить</button></div>`;
+  el.innerHTML = h;
+}
+
+/* ================= ДЕЙСТВИЯ ================= */
+function addBlock(type){
+  const b = mk(type);
+  const i = state.blocks.findIndex(x => x.id === state.selected);
+  if (i >= 0) state.blocks.splice(i + 1, 0, b); else state.blocks.push(b);
+  state.selected = b.id;
+  snap(); render();
+  const el = canvas.querySelector(`[data-id="${b.id}"]`);
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function doAct(id, act){
+  const i = state.blocks.findIndex(b => b.id === id);
+  if (i < 0) return;
+  if (act === 'up' && i > 0) { const t = state.blocks[i-1]; state.blocks[i-1] = state.blocks[i]; state.blocks[i] = t; }
+  else if (act === 'down' && i < state.blocks.length - 1) { const t = state.blocks[i+1]; state.blocks[i+1] = state.blocks[i]; state.blocks[i] = t; }
+  else if (act === 'dup') { const c = clone(state.blocks[i]); c.id = uid(); state.blocks.splice(i + 1, 0, c); state.selected = c.id; }
+  else if (act === 'del') { state.blocks.splice(i, 1); state.selected = null; }
+  else return;
+  snap(); render();
+}
+
+function toast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1700);
+}
+
+/* ================= СОБЫТИЯ ================= */
+$('#palette').innerHTML = Object.keys(DEFS).map(k => `<button class="pbtn" data-type="${k}"><i>${DEFS[k].icon}</i>${DEFS[k].name}</button>`).join('');
+$('#palette').addEventListener('click', e => {
+  const btn = e.target.closest('[data-type]');
+  if (btn) addBlock(btn.dataset.type);
+});
+
+canvas.addEventListener('click', e => {
+  const act = e.target.closest('[data-act]');
+  if (act) { e.preventDefault(); e.stopPropagation(); doAct(act.closest('.blk').dataset.id, act.dataset.act); return; }
+  const blk = e.target.closest('.blk');
+  const id = blk ? blk.dataset.id : null;
+  if (state.selected !== id) { state.selected = id; updateSel(); renderProps(); }
+});
+
+canvas.addEventListener('input', e => {
+  const t = e.target, f = t.dataset.field;
+  if (!f) return;
+  const blk = t.closest('.blk'); if (!blk) return;
+  const b = state.blocks.find(x => x.id === blk.dataset.id); if (!b) return;
+  if (f === 'links') {
+    b.content.links = [...blk.querySelectorAll('[data-field="links"]')].map(s => s.innerText.trim()).join(', ');
+  } else {
+    b.content[f] = t.innerText;
+  }
+});
+canvas.addEventListener('focusout', () => snap());
+canvas.addEventListener('paste', e => {
+  if (!e.target.isContentEditable) return;
+  e.preventDefault();
+  const txt = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, txt);
+});
+
+$('#props').addEventListener('input', e => {
+  const b = state.blocks.find(x => x.id === state.selected); if (!b) return;
+  const t = e.target;
+  const upd = (obj, key, val, isRange) => {
+    obj[key] = val;
+    if (isRange) { const sp = t.closest('.fld').querySelector('span'); if (sp) sp.textContent = sp.textContent.replace(/:\s*\d+px/, ': ' + val + 'px'); }
+    renderCanvasOnly();
+  };
+  if (t.dataset.prop) {
+    const p = t.dataset.prop;
+    upd(b.props, p, (p === 'padding' || p === 'radius') ? +t.value : t.value, t.type === 'range');
+  } else if (t.dataset.cf) {
+    const f = t.dataset.cf;
+    if (f === 'count') { b.content.count = +t.value; render(); return; }
+    upd(b.content, f, (f === 'h') ? +t.value : t.value, t.type === 'range');
+  }
+});
+$('#props').addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.up === 'img' && t.files && t.files[0]) {
+    const b = state.blocks.find(x => x.id === state.selected);
+    const fr = new FileReader();
+    fr.onload = () => { if (b) { b.content.src = fr.result; snap(); render(); toast('Картинка вставлена'); } };
+    fr.readAsDataURL(t.files[0]);
+    return;
+  }
+  snap();
+});
+$('#props').addEventListener('click', e => {
+  const a = e.target.closest('[data-act2]');
+  if (a) doAct(state.selected, a.dataset.act2);
+});
+
+$('#btnUndo').onclick = undo;
+$('#btnRedo').onclick = redo;
+$('#btnSave').onclick = () => { localStorage.setItem('nexus_builder', JSON.stringify(state)); toast('Проект сохранён в браузере'); };
+$('#btnLoad').onclick = () => {
+  const s = localStorage.getItem('nexus_builder');
+  if (!s) return toast('Сохранений нет');
+  const d = JSON.parse(s);
+  state = { title: d.title || 'Мой сайт', blocks: d.blocks || [], selected: null };
+  $('#docTitle').value = state.title;
+  snap(); render(); toast('Проект загружен');
+};
+$('#btnPreview').onclick = () => {
+  const url = URL.createObjectURL(new Blob([exportHTML()], { type:'text/html;charset=utf-8' }));
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
+};
+$('#btnDownload').onclick = () => {
+  const name = (state.title || 'site').replace(/[^\wа-яёА-ЯЁ\- ]/g, '').trim().replace(/\s+/g, '-') || 'site';
+  const blob = new Blob([exportHTML()], { type:'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name + '.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast('Сайт скачан: ' + name + '.html');
+};
+$('#tplSel').onchange = e => {
+  const v = e.target.value; if (!v) return;
+  state.blocks = TPL[v] ? TPL[v]() : [];
+  state.selected = null;
+  e.target.value = '';
+  snap(); render();
+  toast(v === 'blank' ? 'Очищено' : 'Шаблон загружен');
+};
+$('#docTitle').oninput = e => { state.title = e.target.value; };
+
+document.addEventListener('keydown', e => {
+  const ae = document.activeElement;
+  const editing = ae && (ae.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(ae.tagName));
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); $('#btnSave').click(); return; }
+  if (!editing && (e.key === 'Delete' || e.key === 'Backspace') && state.selected) { e.preventDefault(); doAct(state.selected, 'del'); }
+});
+
+/* ================= СТАРТ ================= */
+$('#sitecss').textContent = SITE_CSS;
+state.blocks = TPL.landing();
+snap();
+render();
+</script>
+</body>
+</html>
